@@ -13,11 +13,6 @@ protocol NetworkServiceProtocol: AnyObject {
     func getForecast(query: String, days: Int, completion: @escaping (Result<Forecast, NetworkServiceError>) -> Void)
 }
 
-enum NetworkServiceError: Error, Equatable {
-    case requestFailed(error: String)
-    case decodingError
-}
-
 class NetworkService: NetworkServiceProtocol {
     
     static let shared = NetworkService()
@@ -31,13 +26,25 @@ class NetworkService: NetworkServiceProtocol {
                 case .success(let data):
                     completion(.success(data))
                 case .failure(let error):
-                    completion(.failure(.requestFailed(error: error.localizedDescription)))
+                    // Ocurrió un error durante la decodificación
+                    print("Error: \(error)")
+                    if let data = response.data {
+                        let decoder = JSONDecoder()
+                        if let serverError = try? decoder.decode(ServerError.self, from: data) {
+                            completion(.failure(.serverError(code: serverError.error.code, message: serverError.error.message)))
+                        } else {
+                            completion(.failure(.decodingError))
+                        }
+                    } else {
+                        completion(.failure(.unknownError))
+                    }
                 }
             }
         } catch {
             completion(.failure(.decodingError))
         }
     }
+    
     
     func getLocations(query: String, completion: @escaping (Result<[Location], NetworkServiceError>) -> Void) {
         performRequest(endpoint: .search(query: query), responseType: [Location].self, completion: completion)

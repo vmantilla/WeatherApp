@@ -1,5 +1,5 @@
 //
-//  SearchViewModelTests.swift
+//  LocationViewModelTests.swift
 //  WeatherAppTests
 //
 //  Created by RAUL MANTILLA ASSIA on 29/05/23.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import WeatherApp
 
-class SearchViewModelTests: XCTestCase {
+class LocationViewModelTests: XCTestCase {
     
     class MockNetworkService: NetworkServiceProtocol {
         var getLocationCalled = false
@@ -31,14 +31,14 @@ class SearchViewModelTests: XCTestCase {
         }
     }
     
-    var viewModel: SearchViewModel!
+    var viewModel: LocationViewModel!
     var mockNetworkService: MockNetworkService!
     
     override func setUp() {
         super.setUp()
         
         mockNetworkService = MockNetworkService()
-        viewModel = SearchViewModel(networkService: mockNetworkService)
+        viewModel = LocationViewModel(networkService: mockNetworkService)
     }
     
     override func tearDown() {
@@ -83,12 +83,12 @@ class SearchViewModelTests: XCTestCase {
     }
 }
 
-extension SearchViewModelTests: SearchViewModelDelegate {
-    func searchViewModelDidUpdateLocations() {
+extension LocationViewModelTests: LocationViewModelDelegate {
+    func locationViewModelDidUpdateLocations() {
         // Not used for this test
     }
     
-    func searchViewModelDidFailWithError(error: Error) {
+    func locationViewModelDidFailWithError(error: Error) {
         // Not used for this test
     }
 }

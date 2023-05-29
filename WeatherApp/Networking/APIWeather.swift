@@ -58,7 +58,7 @@ enum APIWeather: URLRequestConvertible {
         case .search:
             return .get
         case .forecast:
-            return .post
+            return .get
         }
     }
     

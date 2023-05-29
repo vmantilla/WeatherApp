@@ -1,5 +1,5 @@
 //
-//  SearchViewController.swift
+//  LocationViewController.swift
 //  WeatherApp
 //
 //  Created by RAUL MANTILLA ASSIA on 28/05/23.
@@ -7,21 +7,21 @@
 
 import UIKit
 
-class SearchViewController: UIViewController {
+class LocationViewController: UIViewController {
     
     @IBOutlet private weak var tableView: UITableView!
     private var refreshControl: UIRefreshControl!
     
     let searchController = UISearchController(searchResultsController: nil)
     
-    var coordinator: SearchCoordinator?
-    var viewModel: SearchViewModelProtocol!
+    var coordinator: LocationCoordinator?
+    var viewModel: LocationViewModelProtocol!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Initialize the view model
-        viewModel = SearchViewModel()
+        viewModel = LocationViewModel()
         viewModel.delegate = self
         
         // Set up table view
@@ -52,14 +52,14 @@ class SearchViewController: UIViewController {
     }
 }
 
-extension SearchViewController: SearchViewModelDelegate {
-    func searchViewModelDidUpdateLocations() {
+extension LocationViewController: LocationViewModelDelegate {
+    func locationViewModelDidUpdateLocations() {
         // Handle the update in locations data and update the UI accordingly
         tableView.reloadData()
         refreshControl.endRefreshing()
     }
     
-    func searchViewModelDidFailWithError(error: Error) {
+    func locationViewModelDidFailWithError(error: Error) {
         // Handle the error and display an appropriate message to the user
         let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
         let retryAction = UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
@@ -74,7 +74,7 @@ extension SearchViewController: SearchViewModelDelegate {
     }
 }
 
-extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
+extension LocationViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.getLocationCount()
     }
@@ -99,7 +99,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
-extension SearchViewController: UISearchResultsUpdating {
+extension LocationViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         self.searchLocation()
     }

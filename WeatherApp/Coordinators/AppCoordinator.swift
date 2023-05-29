@@ -8,6 +8,7 @@
 import UIKit
 
 class AppCoordinator: Coordinator {
+    
     var childCoordinators = [Coordinator]()
     var navigationController: UINavigationController
 
@@ -16,8 +17,10 @@ class AppCoordinator: Coordinator {
     }
 
     func start() {
-        let searchCoordinator = SearchCoordinator(navigationController: navigationController)
-        searchCoordinator.start()
-        childCoordinators.append(searchCoordinator)
+        let locationCoordinator = LocationCoordinator(navigationController: navigationController)
+        locationCoordinator.start()
+        childCoordinators.append(locationCoordinator)
     }
+    
+    func childDidFinish(_ child: Coordinator) { }
 }

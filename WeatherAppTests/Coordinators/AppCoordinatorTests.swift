@@ -34,7 +34,7 @@ class AppCoordinatorTests: XCTestCase {
         // Then
         // Verify that a search coordinator has been created and added to the child coordinators
         XCTAssertEqual(appCoordinator.childCoordinators.count, 1)
-        XCTAssertTrue(appCoordinator.childCoordinators.first is SearchCoordinator)
+        XCTAssertTrue(appCoordinator.childCoordinators.first is LocationCoordinator)
         
         // Verify that the navigation controller has the search coordinator's view controller at the top
         XCTAssertEqual(navigationController.topViewController, appCoordinator.childCoordinators.first?.navigationController.topViewController)

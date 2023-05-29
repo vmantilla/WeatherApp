@@ -1,5 +1,5 @@
 //
-//  SearchViewModel.swift
+//  LocationViewModel.swift
 //  WeatherApp
 //
 //  Created by RAUL MANTILLA ASSIA on 28/05/23.
@@ -7,22 +7,22 @@
 
 import Foundation
 
-protocol SearchViewModelProtocol: AnyObject {
-    var delegate: SearchViewModelDelegate? { get set }
+protocol LocationViewModelProtocol: AnyObject {
+    var delegate: LocationViewModelDelegate? { get set }
     func searchLocation(query: String)
     func clearLocations()
     func getLocationCount() -> Int
     func getLocation(at index: Int) -> Location?
 }
 
-protocol SearchViewModelDelegate: AnyObject {
-    func searchViewModelDidUpdateLocations()
-    func searchViewModelDidFailWithError(error: Error)
+protocol LocationViewModelDelegate: AnyObject {
+    func locationViewModelDidUpdateLocations()
+    func locationViewModelDidFailWithError(error: Error)
 }
 
-class SearchViewModel: SearchViewModelProtocol {
+class LocationViewModel: LocationViewModelProtocol {
     
-    weak var delegate: SearchViewModelDelegate?
+    weak var delegate: LocationViewModelDelegate?
     private let networkService: NetworkServiceProtocol
     
     private var locations: [Location] = []
@@ -41,9 +41,9 @@ class SearchViewModel: SearchViewModelProtocol {
             switch result {
             case .success(let location):
                 self.locations = location
-                self.delegate?.searchViewModelDidUpdateLocations()
+                self.delegate?.locationViewModelDidUpdateLocations()
             case .failure(let error):
-                self.delegate?.searchViewModelDidFailWithError(error: error)
+                self.delegate?.locationViewModelDidFailWithError(error: error)
             }
         }
     }
@@ -58,6 +58,6 @@ class SearchViewModel: SearchViewModelProtocol {
     
     func clearLocations() {
         locations.removeAll()
-        self.delegate?.searchViewModelDidUpdateLocations()
+        self.delegate?.locationViewModelDidUpdateLocations()
     }
 }
