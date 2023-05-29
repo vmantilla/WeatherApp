@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 
 protocol NetworkServiceProtocol: AnyObject {
-    func getLocation(query: String, completion: @escaping (Result<Location, NetworkServiceError>) -> Void)
+    func getLocations(query: String, completion: @escaping (Result<[Location], NetworkServiceError>) -> Void)
     func getForecast(query: String, days: Int, completion: @escaping (Result<Forecast, NetworkServiceError>) -> Void)
 }
 
@@ -39,8 +39,8 @@ class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func getLocation(query: String, completion: @escaping (Result<Location, NetworkServiceError>) -> Void) {
-        performRequest(endpoint: .search(query: query), responseType: Location.self, completion: completion)
+    func getLocations(query: String, completion: @escaping (Result<[Location], NetworkServiceError>) -> Void) {
+        performRequest(endpoint: .search(query: query), responseType: [Location].self, completion: completion)
     }
     
     func getForecast(query: String, days: Int, completion: @escaping (Result<Forecast, NetworkServiceError>) -> Void) {

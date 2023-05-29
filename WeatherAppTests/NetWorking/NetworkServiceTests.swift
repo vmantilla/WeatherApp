@@ -14,12 +14,12 @@ class NetworkServiceTests: XCTestCase {
         var getLocationCalled = false
         var getForecastCalled = false
         
-        func getLocation(query: String, completion: @escaping (Result<Location, NetworkServiceError>) -> Void) {
+        func getLocations(query: String, completion: @escaping (Result<[Location], NetworkServiceError>) -> Void) {
             getLocationCalled = true
             
             // Simulate success response
             let location = Location(name: "London", country: "UK")
-            completion(.success(location))
+            completion(.success([location]))
         }
         
         func getForecast(query: String, days: Int, completion: @escaping (Result<Forecast, NetworkServiceError>) -> Void) {
@@ -30,14 +30,17 @@ class NetworkServiceTests: XCTestCase {
         }
     }
     
-    func testGetLocation() {
+    func testGetLocations() {
+        // Given
         let mockService = MockNetworkService()
         
-        mockService.getLocation(query: "London") { result in
+        // When
+        mockService.getLocations(query: "London") { result in
+            // Then
             switch result {
             case .success(let location):
-                XCTAssertEqual(location.name, "London")
-                XCTAssertEqual(location.country, "UK")
+                XCTAssertEqual(location.first?.name, "London")
+                XCTAssertEqual(location.first?.country, "UK")
             case .failure:
                 XCTFail("Should not fail")
             }
@@ -47,9 +50,12 @@ class NetworkServiceTests: XCTestCase {
     }
     
     func testGetForecast() {
+        // Given
         let mockService = MockNetworkService()
         
+        // When
         mockService.getForecast(query: "London", days: 5) { result in
+            // Then
             switch result {
             case .success:
                 XCTFail("Should fail")

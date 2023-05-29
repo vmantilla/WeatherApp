@@ -27,12 +27,19 @@ enum APIWeather: URLRequestConvertible {
         return baseURL
     }
     
+    // MARK: - API Key Conversion
+    /* During Development The API key is stored in a PLIST file named "Secrets", which is added to the git ignore to prevent it from being pushed to the repository. However, during production deployment, the API key is provided as a DATA object and converted to a string.
+     Example:
+     let apiKeyData = Data([234, 1, 54, 23, 23, 166, .... , 67, 6, 65, 97, 12, 101, 56, 6, 7])
+     let apiKeyString = apiKeyData.map { String(format: "%02hhx", $0) }.joined()
+    */
     static var apiKey: String {
         guard let apiKey = Secrets.shared["apiKey"] as? String else {
             fatalError("Unable to find apiKey in Secrets.plist")
         }
         return apiKey
     }
+
     
     case search(query: String)
     case forecast(query: String, days: Int)
