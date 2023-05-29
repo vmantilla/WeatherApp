@@ -20,4 +20,8 @@ class SearchCoordinator: Coordinator {
         searchVC.coordinator = self
         navigationController.pushViewController(searchVC, animated: true)
     }
+    
+    func showLocationDetails(location: Location) {
+        
+    }
 }

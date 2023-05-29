@@ -18,7 +18,7 @@ class SearchViewModelTests: XCTestCase {
             
             if query == "London" {
                 // Simulate success response
-                let location = Location(name: "London", country: "UK")
+                let location = Location(id: 1, name: "London", country: "UK")
                 completion(.success([location]))
             } else {
                 // Simulate failure response

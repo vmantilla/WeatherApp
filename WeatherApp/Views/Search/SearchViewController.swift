@@ -9,6 +9,11 @@ import UIKit
 
 class SearchViewController: UIViewController {
     
+    @IBOutlet private weak var tableView: UITableView!
+    private var refreshControl: UIRefreshControl!
+    
+    let searchController = UISearchController(searchResultsController: nil)
+    
     var coordinator: SearchCoordinator?
     var viewModel: SearchViewModelProtocol!
     
@@ -19,30 +24,83 @@ class SearchViewController: UIViewController {
         viewModel = SearchViewModel()
         viewModel.delegate = self
         
-        // Do any additional setup after loading the view.
-        viewModel.searchLocation(query: "Cartagena")
+        // Set up table view
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(LocationCell.self, forCellReuseIdentifier: LocationCell.reuseIdentifier)
+        
+        // Set up UISearchController
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Locations"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+        
+        // Set up pull-to-refresh
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(searchLocation), for: .valueChanged)
+        tableView.refreshControl = refreshControl
     }
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-         // Get the new view controller using segue.destination.
-         // Pass the selected object to the new view controller.
-     }
-     */
-    
+    @objc private func searchLocation() {
+        let searchBar = searchController.searchBar
+        guard let text = searchBar.text, !text.isEmpty else {
+            viewModel.clearLocations()
+            return
+        }
+        viewModel.searchLocation(query: text)
+    }
 }
 
 extension SearchViewController: SearchViewModelDelegate {
     func searchViewModelDidUpdateLocations() {
         // Handle the update in locations data and update the UI accordingly
-        print(viewModel.getLocationCount())
+        tableView.reloadData()
+        refreshControl.endRefreshing()
     }
     
     func searchViewModelDidFailWithError(error: Error) {
         // Handle the error and display an appropriate message to the user
-        print(error.localizedDescription)
+        let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        let retryAction = UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
+            self?.searchLocation()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(retryAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+        
+        refreshControl.endRefreshing()
+    }
+}
+
+extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.getLocationCount()
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: LocationCell.reuseIdentifier, for: indexPath) as? LocationCell else {
+            return UITableViewCell()
+        }
+        
+        if let location = viewModel.getLocation(at: indexPath.row) {
+            cell.configure(with: location)
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let location = viewModel.getLocation(at: indexPath.row) {
+            // Show location details screen with the selected location
+            coordinator?.showLocationDetails(location: location)
+        }
+    }
+}
+
+extension SearchViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        self.searchLocation()
     }
 }

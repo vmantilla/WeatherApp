@@ -18,7 +18,7 @@ class NetworkServiceTests: XCTestCase {
             getLocationCalled = true
             
             // Simulate success response
-            let location = Location(name: "London", country: "UK")
+            let location = Location(id: 1, name: "London", country: "UK")
             completion(.success([location]))
         }
         

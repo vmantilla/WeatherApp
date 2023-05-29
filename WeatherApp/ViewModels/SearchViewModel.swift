@@ -10,6 +10,7 @@ import Foundation
 protocol SearchViewModelProtocol: AnyObject {
     var delegate: SearchViewModelDelegate? { get set }
     func searchLocation(query: String)
+    func clearLocations()
     func getLocationCount() -> Int
     func getLocation(at index: Int) -> Location?
 }
@@ -31,12 +32,15 @@ class SearchViewModel: SearchViewModelProtocol {
     }
     
     func searchLocation(query: String) {
+        
+        self.clearLocations()
+        
         networkService.getLocations(query: query) { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .success(let location):
-                self.locations.append(contentsOf: location)
+                self.locations = location
                 self.delegate?.searchViewModelDidUpdateLocations()
             case .failure(let error):
                 self.delegate?.searchViewModelDidFailWithError(error: error)
@@ -50,5 +54,10 @@ class SearchViewModel: SearchViewModelProtocol {
     
     func getLocation(at index: Int) -> Location? {
         return locations.safe(at: index)
+    }
+    
+    func clearLocations() {
+        locations.removeAll()
+        self.delegate?.searchViewModelDidUpdateLocations()
     }
 }
