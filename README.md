@@ -42,7 +42,7 @@ The application uses the Alamofire library for network requests. The `NetworkSer
 
 ## Image Loading
 
-The Kingfisher library is used for image loading and caching. The `ForecastCollectionViewCell` and `CurrentCollectionViewCell` utilize Kingfisher to load weather condition icons from a URL and display them in the respective views.
+The Kingfisher library is used for image loading and caching. The `ForecastCollectionViewCell` utilize Kingfisher to load weather condition icons from a URL and display them in the respective views.
 
 ## Coordinator Pattern
 
