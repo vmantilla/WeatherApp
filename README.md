@@ -69,11 +69,7 @@ During development, the Secrets.plist file is typically created locally and adde
 To ensure the security of sensitive data, it is important to follow best practices, such as:
 
 - Adding the Secrets.plist file to the project's .gitignore file to prevent it from being accidentally committed and pushed to a public repository.
-- Keeping the file secure and not sharing it with unauthorized individuals.
-- Using secure methods to access and retrieve the sensitive information from the Secrets.plist file within the application code.
-- By using the Secrets.plist file, you can maintain the confidentiality of sensitive data and improve the overall security of your application.
 
-Ensure that you add the `Secrets.plist` file to the project and configure the keys correctly for the application to function properly.
 
 ## Requirements
 
