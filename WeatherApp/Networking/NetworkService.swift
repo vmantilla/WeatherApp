@@ -25,9 +25,7 @@ class NetworkService: NetworkServiceProtocol {
                 switch response.result {
                 case .success(let data):
                     completion(.success(data))
-                case .failure(let error):
-                    // Ocurrió un error durante la decodificación
-                    print("Error: \(error)")
+                case .failure( _ ):
                     if let data = response.data {
                         let decoder = JSONDecoder()
                         if let serverError = try? decoder.decode(ServerError.self, from: data) {

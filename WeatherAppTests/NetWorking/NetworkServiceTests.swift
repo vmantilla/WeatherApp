@@ -26,7 +26,7 @@ class NetworkServiceTests: XCTestCase {
             getForecastCalled = true
             
             // Simulate failure response
-            completion(.failure(.requestFailed(error: "Failed to get forecast")))
+            completion(.failure(.serverError(code: 0, message: "Failed to get forecast")))
         }
     }
     
@@ -60,7 +60,7 @@ class NetworkServiceTests: XCTestCase {
             case .success:
                 XCTFail("Should fail")
             case .failure(let error):
-                XCTAssertEqual(error, .requestFailed(error: "Failed to get forecast"))
+                XCTAssertEqual(error, .serverError(code: 0, message: "Failed to get forecast"))
             }
         }
         

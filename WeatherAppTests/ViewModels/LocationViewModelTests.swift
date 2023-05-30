@@ -22,7 +22,7 @@ class LocationViewModelTests: XCTestCase {
                 completion(.success([location]))
             } else {
                 // Simulate failure response
-                completion(.failure(.requestFailed(error: "Failed to get location")))
+                completion(.failure(.serverError(code: 0, message: "Failed to get location")))
             }
         }
         
@@ -52,16 +52,13 @@ class LocationViewModelTests: XCTestCase {
         let query = "London"
         let expectation = XCTestExpectation(description: "Search Location Success")
         
-        viewModel.delegate = self
         viewModel.searchLocation(query: query)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            XCTAssertTrue(self.mockNetworkService.getLocationCalled)
-            XCTAssertEqual(self.viewModel.getLocationCount(), 1)
-            XCTAssertEqual(self.viewModel.getLocation(at: 0)?.name, "London")
-            XCTAssertEqual(self.viewModel.getLocation(at: 0)?.country, "UK")
-            expectation.fulfill()
-        }
+        XCTAssertTrue(self.mockNetworkService.getLocationCalled)
+        XCTAssertEqual(self.viewModel.getLocationCount(), 1)
+        XCTAssertEqual(self.viewModel.getLocation(at: 0)?.name, "London")
+        XCTAssertEqual(self.viewModel.getLocation(at: 0)?.country, "UK")
+        expectation.fulfill()
         
         wait(for: [expectation], timeout: 1.5)
     }
@@ -70,26 +67,13 @@ class LocationViewModelTests: XCTestCase {
         let query = "Paris"
         let expectation = XCTestExpectation(description: "Search Location Failure")
         
-        viewModel.delegate = self
         viewModel.searchLocation(query: query)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            XCTAssertTrue(self.mockNetworkService.getLocationCalled)
-            XCTAssertEqual(self.viewModel.getLocationCount(), 0)
-            expectation.fulfill()
-        }
+        XCTAssertTrue(self.mockNetworkService.getLocationCalled)
+        XCTAssertEqual(self.viewModel.getLocationCount(), 0)
+        expectation.fulfill()
         
         wait(for: [expectation], timeout: 1.5)
-    }
-}
-
-extension LocationViewModelTests: LocationViewModelDelegate {
-    func locationViewModelDidUpdateLocations() {
-        // Not used for this test
-    }
-    
-    func locationViewModelDidFailWithError(error: Error) {
-        // Not used for this test
     }
 }
 

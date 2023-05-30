@@ -16,7 +16,8 @@ class LocationCoordinator: Coordinator {
     }
     
     func start() {
-        let locationViewController = LocationViewController()
+        let viewModel = LocationViewModel()
+        let locationViewController = LocationViewController(viewModel: viewModel)
         locationViewController.coordinator = self
         navigationController.pushViewController(locationViewController, animated: true)
     }

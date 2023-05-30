@@ -25,7 +25,7 @@ class APIWeatherTests: XCTestCase {
         let endpoint = APIWeather.forecast(query: query, days: days)
         
         XCTAssertEqual(endpoint.path, "/v1/forecast.json")
-        XCTAssertEqual(endpoint.method, .post)
+        XCTAssertEqual(endpoint.method, .get)
         XCTAssertEqual(endpoint.parameters["q"] as? String, query)
         XCTAssertEqual(endpoint.parameters["days"] as? Int, days)
     }

@@ -1,0 +1,25 @@
+/* 
+  Localizable.strings
+  WeatherApp
+
+  Created by RAUL MANTILLA ASSIA on 30/05/23.
+  
+*/
+
+"humidity" = "Humidity: %d%%";
+"precipitation" = "Precipitation: %.1f°";
+"current_temperature" = "%.0f°C";
+"max_temperature" = "Max";
+"min_temperature" = "Min";
+"search_locations" = "Search Locations";
+"weather_app" = "Weather App";
+"error" = "Error";
+"retry" = "Retry";
+"cancel" = "Cancel";
+
+"server_error" = "Server Error";
+"server_error_message" = "The server responded with code";
+"decoding_error" = "Decoding Error";
+"decoding_error_message" = "There was an issue decoding the response.";
+"unknown_error" = "Unknown Error";
+"unknown_error_message" = "An unknown error occurred.";

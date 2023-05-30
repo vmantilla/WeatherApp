@@ -16,7 +16,7 @@ protocol ForecastViewModelProtocol: AnyObject {
 
 protocol ForecastViewModelDelegate: AnyObject {
     func forecastViewModelDidUpdateForecast()
-    func forecastViewModelDidFailWithError(error: Error)
+    func forecastViewModelDidFailWithError(title: String, error: String)
 }
 
 class ForecastViewModel: ForecastViewModelProtocol {
@@ -41,7 +41,8 @@ class ForecastViewModel: ForecastViewModelProtocol {
                 self.forecast = forecast
                 self.delegate?.forecastViewModelDidUpdateForecast()
             case .failure(let error):
-                self.delegate?.forecastViewModelDidFailWithError(error: error)
+                let alertMessage = error.handle()
+                self.delegate?.forecastViewModelDidFailWithError(title: alertMessage.title, error: alertMessage.message)
             }
         }
     }

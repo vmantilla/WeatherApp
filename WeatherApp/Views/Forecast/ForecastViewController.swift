@@ -21,7 +21,7 @@ class ForecastViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        viewModel.fetchForecast(for: 3)
+        fetchForecast()
         setupNavigationBar()
     }
     
@@ -29,6 +29,10 @@ class ForecastViewController: UIViewController {
         if let coordinator = coordinator {
             coordinator.didFinish()
         }
+    }
+    
+    private func fetchForecast() {
+        viewModel.fetchForecast(for: 3)
     }
     
     private func setupUI() {
@@ -42,7 +46,6 @@ class ForecastViewController: UIViewController {
         collectionView.delegate = self
         collectionView.register(UINib(nibName: ForecastCollectionViewCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: ForecastCollectionViewCell.reuseIdentifier)
         collectionView.register(UINib(nibName: CurrentCollectionViewCell.reuseIdentifier, bundle: nil), forCellWithReuseIdentifier: CurrentCollectionViewCell.reuseIdentifier)
-        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "SectionHeader")
     }
     
     private func setupNavigationBar() {
@@ -98,37 +101,6 @@ extension ForecastViewController: UICollectionViewDelegateFlowLayout {
         let height: CGFloat = (indexPath.section == 0) ? 200 : 100
         return CGSize(width: width, height: height)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "SectionHeader", for: indexPath)
-        
-        if indexPath.section == 1 {
-            let titleLabel = UILabel()
-            titleLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
-            titleLabel.textColor = .white
-            titleLabel.textAlignment = .center
-            titleLabel.text = "Pronóstico para los próximos días"
-            titleLabel.translatesAutoresizingMaskIntoConstraints = false
-            headerView.addSubview(titleLabel)
-            NSLayoutConstraint.activate([
-                titleLabel.topAnchor.constraint(equalTo: headerView.topAnchor, constant: 10),
-                titleLabel.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 10),
-                titleLabel.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -10),
-                titleLabel.bottomAnchor.constraint(equalTo: headerView.bottomAnchor, constant: -10)
-            ])
-        } else {
-            for subview in headerView.subviews {
-                subview.removeFromSuperview()
-            }
-        }
-        
-        return headerView
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: 40)
-    }
 }
 
 extension ForecastViewController: ForecastViewModelDelegate {
@@ -139,7 +111,15 @@ extension ForecastViewController: ForecastViewModelDelegate {
         }
     }
     
-    func forecastViewModelDidFailWithError(error: Error) {
-        // Handle error
+    func forecastViewModelDidFailWithError(title: String, error: String) {
+        self.showAlertWithRetryCancel(
+            title: title,
+            message: error,
+            retryHandler: { [weak self] in
+                guard let self = self else { return }
+                self.fetchForecast()
+            },
+            cancelHandler: { }
+        )
     }
 }

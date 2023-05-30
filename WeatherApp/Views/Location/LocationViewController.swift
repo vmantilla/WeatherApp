@@ -9,40 +9,74 @@ import UIKit
 
 class LocationViewController: UIViewController {
     
-    @IBOutlet private weak var tableView: UITableView!
-    private var refreshControl: UIRefreshControl!
+    @IBOutlet var collectionView: UICollectionView!
     
     let searchController = UISearchController(searchResultsController: nil)
     
     var coordinator: LocationCoordinator?
     var viewModel: LocationViewModelProtocol!
     
+    init(viewModel: LocationViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel.delegate = self
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Initialize the view model
-        viewModel = LocationViewModel()
-        viewModel.delegate = self
+        setupView()
+        setupCollectionView()
+        setupSearchController()
+    }
+
+    private func setupView() {
+        self.view.backgroundColor = .darkGray
         
-        // Set up table view
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(LocationCell.self, forCellReuseIdentifier: LocationCell.reuseIdentifier)
-        
-        // Set up UISearchController
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Search Locations"
         navigationItem.searchController = searchController
         definesPresentationContext = true
         
-        // Set up pull-to-refresh
-        refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(searchLocation), for: .valueChanged)
-        tableView.refreshControl = refreshControl
+        // Set the title
+        self.title = NSLocalizedString("weather_app", comment: "")
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
     }
-    
-    @objc private func searchLocation() {
+
+    private func setupCollectionView() {
+        collectionView.register(LocationCollectionViewCell.self, forCellWithReuseIdentifier: LocationCollectionViewCell.reuseIdentifier)
+    }
+
+    private func setupSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = NSLocalizedString("search_locations", comment: "")
+        searchController.searchBar.searchBarStyle = .minimal
+        searchController.searchBar.barStyle = .blackTranslucent
+        searchController.searchBar.tintColor = .white
+        customizeSearchBar()
+        
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+
+    private func customizeSearchBar() {
+        if let textField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
+            textField.textColor = .white
+            textField.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+            if let clearButton = textField.value(forKey: "clearButton") as? UIButton {
+                clearButton.setImage(clearButton.imageView?.image?.withRenderingMode(.alwaysTemplate), for: .normal)
+                clearButton.tintColor = .white
+            }
+            let glassIconView = textField.leftView as? UIImageView
+            glassIconView?.image = glassIconView?.image?.withRenderingMode(.alwaysTemplate)
+            glassIconView?.tintColor = .white
+        }
+    }
+
+    @objc func searchLocation() {
         let searchBar = searchController.searchBar
         guard let text = searchBar.text, !text.isEmpty else {
             viewModel.clearLocations()
@@ -52,36 +86,14 @@ class LocationViewController: UIViewController {
     }
 }
 
-extension LocationViewController: LocationViewModelDelegate {
-    func locationViewModelDidUpdateLocations() {
-        // Handle the update in locations data and update the UI accordingly
-        tableView.reloadData()
-        refreshControl.endRefreshing()
-    }
-    
-    func locationViewModelDidFailWithError(error: Error) {
-        // Handle the error and display an appropriate message to the user
-        let alertController = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-        let retryAction = UIAlertAction(title: "Retry", style: .default) { [weak self] _ in
-            self?.searchLocation()
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        alertController.addAction(retryAction)
-        alertController.addAction(cancelAction)
-        present(alertController, animated: true, completion: nil)
-        
-        refreshControl.endRefreshing()
-    }
-}
-
-extension LocationViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+extension LocationViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.getLocationCount()
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: LocationCell.reuseIdentifier, for: indexPath) as? LocationCell else {
-            return UITableViewCell()
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: LocationCollectionViewCell.reuseIdentifier, for: indexPath) as? LocationCollectionViewCell else {
+            return UICollectionViewCell()
         }
         
         if let location = viewModel.getLocation(at: indexPath.row) {
@@ -91,11 +103,36 @@ extension LocationViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let location = viewModel.getLocation(at: indexPath.row) {
             // Show location details screen with the selected location
             coordinator?.showLocationDetails(location: location)
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = collectionView.bounds.width - 20 // Subtracting the spacing between cells (10 on each side)
+        let height: CGFloat = 80
+        return CGSize(width: width, height: height)
+    }
+}
+
+extension LocationViewController: LocationViewModelDelegate {
+    func locationViewModelDidUpdateLocations() {
+        // Handle the update in locations data and update the UI accordingly
+        collectionView.reloadData()
+    }
+    
+    func locationViewModelDidFailWithError(title: String, error: String) {
+        self.showAlertWithRetryCancel(
+            title: title,
+            message: error,
+            retryHandler: { [weak self] in
+                guard let self = self else { return }
+                self.searchLocation()
+            },
+            cancelHandler: { }
+        )
     }
 }
 

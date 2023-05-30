@@ -17,7 +17,7 @@ protocol LocationViewModelProtocol: AnyObject {
 
 protocol LocationViewModelDelegate: AnyObject {
     func locationViewModelDidUpdateLocations()
-    func locationViewModelDidFailWithError(error: Error)
+    func locationViewModelDidFailWithError(title: String, error: String)
 }
 
 class LocationViewModel: LocationViewModelProtocol {
@@ -43,7 +43,8 @@ class LocationViewModel: LocationViewModelProtocol {
                 self.locations = location
                 self.delegate?.locationViewModelDidUpdateLocations()
             case .failure(let error):
-                self.delegate?.locationViewModelDidFailWithError(error: error)
+                let alertMessage = error.handle()
+                self.delegate?.locationViewModelDidFailWithError(title: alertMessage.title, error: alertMessage.message)
             }
         }
     }

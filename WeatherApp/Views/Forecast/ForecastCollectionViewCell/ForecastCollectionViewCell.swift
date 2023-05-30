@@ -10,36 +10,42 @@ import Kingfisher
 
 class ForecastCollectionViewCell: UICollectionViewCell {
     
-    private let separatorLine = UIView()
-    
     @IBOutlet private var dayLabel: UILabel!
     @IBOutlet private var weatherIconImageView: UIImageView!
     @IBOutlet private var minTempLabel: UILabel!
     @IBOutlet private var maxTempLabel: UILabel!
     @IBOutlet private var conditionText: UILabel!
     
-    static let reuseIdentifier = "ForecastCollectionViewCell"
+    static let reuseIdentifier = String(describing: ForecastCollectionViewCell.self)
     
-    func configureStyle() {
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        configureStyle()
+    }
+    
+    private func configureStyle() {
         backgroundColor = UIColor.darkGray.withAlphaComponent(0.8)
         layer.cornerRadius = 10
     }
     
     func configure(with forecast: DayForecast) {
-        if let formattedDate = String.convertToDayOfWeek(from: forecast.date) {
-            dayLabel.text = formattedDate.uppercased()
-        } else {
-            dayLabel.text = ""
-        }
-        
+        dayLabel.text = String.convertToDayOfWeek(from: forecast.date)?.uppercased() ?? ""
         conditionText.text = forecast.day.condition.text
-        let conditionIconUrl = "https:\(forecast.day.condition.icon)"
+        configureTemperatureLabels(with: forecast.day)
+        configureWeatherIcon(with: forecast.day.condition.icon)
+    }
+    
+    private func configureTemperatureLabels(with dayForecast: DayDetails) {
+        let maxTempText = String(format: NSLocalizedString("max_temperature", comment: "") + " %.0f°C", dayForecast.maxTempCelsius)
+        let minTempText = String(format: NSLocalizedString("min_temperature", comment: "") + " %.0f°C", dayForecast.minTempCelsius)
         
-        weatherIconImageView.kf.setImage(with: URL(string: conditionIconUrl))
-        
-        minTempLabel.text = "Max \(forecast.day.minTempCelsius)°C"
-        maxTempLabel.text = "Min  \(forecast.day.maxTempCelsius)°C"
-        
-        configureStyle()
+        maxTempLabel.text = maxTempText
+        minTempLabel.text = minTempText
+    }
+    
+    private func configureWeatherIcon(with iconURLString: String) {
+        let fullURLString = "https:" + iconURLString
+        guard let url = URL(string: fullURLString) else { return }
+        weatherIconImageView.kf.setImage(with: url)
     }
 }

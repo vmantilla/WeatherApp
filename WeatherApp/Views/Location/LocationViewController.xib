@@ -10,33 +10,39 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LocationViewController" customModule="WeatherApp" customModuleProvider="target">
             <connections>
-                <outlet property="tableView" destination="1D7-MP-HAv" id="fTf-pN-J3i"/>
+                <outlet property="collectionView" destination="rug-TN-LRv" id="pSM-mC-stQ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="1D7-MP-HAv">
-                    <rect key="frame" x="0.0" y="59" width="375" height="608"/>
-                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="rug-TN-LRv">
+                    <rect key="frame" x="6" y="59" width="381" height="759"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="QfM-yC-8qG">
+                        <size key="itemSize" width="128" height="128"/>
+                        <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                        <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                        <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                    </collectionViewFlowLayout>
                     <connections>
-                        <outlet property="dataSource" destination="-1" id="JLA-WP-zCP"/>
-                        <outlet property="delegate" destination="-1" id="EJO-te-wsd"/>
+                        <outlet property="dataSource" destination="-1" id="yRs-f6-owF"/>
+                        <outlet property="delegate" destination="-1" id="sOT-mG-NcE"/>
                     </connections>
-                </tableView>
+                </collectionView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="1D7-MP-HAv" secondAttribute="bottom" id="AsI-yW-Z08"/>
-                <constraint firstItem="1D7-MP-HAv" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="JLl-iK-63Y"/>
-                <constraint firstItem="1D7-MP-HAv" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="wQp-BF-AIN"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="1D7-MP-HAv" secondAttribute="trailing" id="z5Q-Lq-qBR"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="rug-TN-LRv" secondAttribute="bottom" id="1FH-A6-AWF"/>
+                <constraint firstItem="rug-TN-LRv" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="6" id="6dQ-TE-33o"/>
+                <constraint firstItem="rug-TN-LRv" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="fVB-nQ-h11"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="rug-TN-LRv" secondAttribute="trailing" constant="6" id="fiM-g1-y3v"/>
             </constraints>
-            <point key="canvasLocation" x="55" y="-11"/>
+            <point key="canvasLocation" x="54.198473282442748" y="-11.267605633802818"/>
         </view>
     </objects>
     <resources>
